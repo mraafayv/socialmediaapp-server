@@ -11,7 +11,11 @@ import userRouter from "./routes/user.js";
 const app = express();
 const cors = require('cors');
 
-app.use(cors());
+const corsOptions = {
+  "Access-Control-Allow-Origin": '*'
+};
+
+app.use(cors(corsOptions));
 
 dotenv.config();
 
