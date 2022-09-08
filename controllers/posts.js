@@ -1,7 +1,9 @@
-import express from 'express';
+import express, { response } from 'express';
 import mongoose from 'mongoose';
+import { ref, uploadString, getDownloadURL } from 'firebase/storage';
 
 import PostMessage from '../models/postMessage.js';
+import { imagesRef } from './firebaseConfig.js';
 
 const router = express.Router();
 
@@ -14,8 +16,10 @@ export const getPosts = async (req, res) => {
     
         const total = await PostMessage.countDocuments({});
         const posts = await PostMessage.find().sort({ _id: -1 }).limit(LIMIT).skip(startIndex);
-
-        res.json({ data: posts, currentPage: Number(page), numberOfPages: Math.ceil(total / LIMIT)});
+        // const posts = await PostMessage.find();
+        const numberOfPages =  Math.ceil(total / LIMIT);
+        // res.json({ data: posts, currentPage: Number(page), numberOfPages: Math.ceil(total / LIMIT)});
+        res.json({ data: posts, currentPage: Number(page), numberOfPages });
     } catch (error) {    
         res.status(404).json({ message: error.message });
     }
@@ -60,7 +64,47 @@ export const getPost = async (req, res) => {
 }
 
 export const createPost = async (req, res) => {
-    const post = req.body;
+    
+    const { title, message, creator, selectedFile, tags } = req.body;
+    var url;
+
+    const name = "IAD-" + title + "-" + Math.ceil(Math.random()*1000000) + "-" + "by" + creator;
+    const spaceRef = ref(imagesRef, name);
+    const metadata = {
+        contentTpe: selectedFile.type
+    };
+
+
+    const uploadTask = uploadString(spaceRef, selectedFile, 'data_url', metadata).then((snapshot) => {
+        console.log('Uploaded a data_url string!');
+      })
+      
+    
+    //////////////////////////////////////////////////////
+    
+     
+      .then(() => {
+        // Handle successful uploads on complete
+        // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+        getDownloadURL(spaceRef).then((downloadURL) => {
+            console.log('File available at', downloadURL); 
+            url = downloadURL;
+        })
+            
+    })
+      
+
+      .catch((error) => console.log(error));
+
+
+    
+
+    
+
+      const post = { title, message, creator, selectedFile: url, tags };
+
+
+
 
     const newPostMessage = new PostMessage({ ...post, creator: req.userId, createdAt: new Date().toISOString() })
 
