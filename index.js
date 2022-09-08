@@ -12,9 +12,8 @@ const app = express();
 
 
 const corsOptions = {
-  "Access-Control-Allow-Origin": '*',
-  "Access-Control-Allow-Methods": POST, GET, OPTIONS
-};
+  "Access-Control-Allow-Origin": "*"
+}
 
 app.use(cors(corsOptions));
 
