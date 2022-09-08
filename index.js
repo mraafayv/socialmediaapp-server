@@ -9,6 +9,9 @@ import userRouter from "./routes/user.js";
 
 
 const app = express();
+const cors = require('cors');
+
+app.use(cors());
 dotenv.config();
 
 app.use(express.json({ limit: '30mb', extended: true }))
