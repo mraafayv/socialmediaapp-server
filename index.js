@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-
+import cors from 'cors';
 import express from 'express';
 import mongoose from 'mongoose';
 
@@ -9,10 +9,11 @@ import userRouter from "./routes/user.js";
 
 
 const app = express();
-const cors = require('cors');
+
 
 const corsOptions = {
-  "Access-Control-Allow-Origin": '*'
+  "Access-Control-Allow-Origin": '*',
+  "Access-Control-Allow-Methods": POST, GET, OPTIONS
 };
 
 app.use(cors(corsOptions));
